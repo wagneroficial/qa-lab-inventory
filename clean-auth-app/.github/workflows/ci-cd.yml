@@ -1,0 +1,49 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  automation-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout do sistema
+        uses: actions/checkout@v4
+        
+      - name: Checkout dos testes automatizados
+        uses: actions/checkout@v4
+        with:
+          repository: wagneroficial/qa-lab-automation
+          path: automation
+          
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          
+      - name: Setup Node.js (se precisar para o sistema)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Instalar dependências dos testes
+        run: |
+          cd automation
+          pip install -r requirements.txt
+          playwright install
+          
+      - name: Executar testes automatizados
+        run: |
+          cd automation
+          pytest -v --html=reports/report.html --self-contained-html
+          
+      - name: Upload dos relatórios
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports
+          path: automation/reports/
