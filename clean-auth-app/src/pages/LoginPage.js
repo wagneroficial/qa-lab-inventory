@@ -51,7 +51,16 @@ const LoginPage = ({ onLogin, onNavigateToRegister }) => {
         </div>
         
         <div>
-        
+          <Input
+            id="login-password"
+            data-testid="login-password-input"
+            type="password"
+            placeholder="password"
+            value={formData.password}
+            onChange={(e) => setFormData({...formData, password: e.target.value})}
+            onKeyPress={handleKeyPress}
+            required
+          />
         </div>
         
         <Button
